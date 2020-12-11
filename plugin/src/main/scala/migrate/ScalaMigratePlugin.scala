@@ -56,6 +56,12 @@ object ScalaMigratePlugin extends AutoPlugin {
   override def trigger = AllRequirements
 
   override def projectSettings: Seq[Setting[_]] =
+  List(
+      semanticdbEnabled := {
+        if (scalaVersion.value.contains("2.13.")) true
+        else semanticdbEnabled.value
+      },
+  ) ++
     inConfig(Compile)(configSettings) ++
       inConfig(Test)(configSettings) ++
       Seq(commands ++= Seq(prepapreMigrateCommand, migrateCommand))
@@ -99,11 +105,6 @@ object ScalaMigratePlugin extends AutoPlugin {
       isScala213 := {
         if (scalaVersion.value.startsWith("2.13.")) true
         else throw new Exception(Messages.notScala213(scalaVersion.value, thisProject.value.id))
-
-      },
-      semanticdbEnabled := {
-        if (scalaVersion.value.contains("2.13.")) true
-        else semanticdbEnabled.value
       },
       scalacOptions ++= {
         if (scalaVersion.value.startsWith("2.13.") && !scalacOptions.value.contains(syntheticsOn))
