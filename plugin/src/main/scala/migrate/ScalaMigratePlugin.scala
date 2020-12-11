@@ -2,6 +2,7 @@ package migrate
 
 import java.nio.file.{ Files, Path }
 
+import buildinfo.BuildInfo
 import migrate.interfaces.Migrate
 import sbt.Keys._
 import sbt._
@@ -83,26 +84,8 @@ object ScalaMigratePlugin extends AutoPlugin {
       result
     }
 
-    var projects = List.empty[String]
-    override def buildSettings: Seq[Def.Setting[_]] = List(
-      onLoad := {
-        s =>
-        projects = Project.extract(s).structure.allProjects.map(_.id).toList
-       s
-      }
-
-    )
-
-    lazy val parser = {
-      import sbt.complete._
-      import sbt.complete.DefaultParsers._
-      val projectCompletions = projects.foldLeft(token("")){
-        case(p, id) => p | token(id)
-      }
-      Space ~> projectCompletions
-    }
   lazy val prepapreMigrateCommand: Command =
-    Command[String]("prepare-migration")(_ => parser) { (state, projectId) =>
+    Command.single("prepare-migration") { (state, projectId) =>
       import sbt.BasicCommandStrings._
 
       val result = List(
