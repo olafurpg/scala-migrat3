@@ -83,6 +83,7 @@ lazy val `sbt-plugin` = project
         .value
     },
     scriptedBufferLog := false,
+    buildInfoPackage := "migrate",
     buildInfoKeys := Seq[BuildInfoKey](
       name,
       "scala3Version"      -> V.scala3,
